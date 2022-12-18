@@ -5,9 +5,10 @@ CLI demo.
 
 ## Getting Started
 
-TODO:
-
-`go get github.com/logank/ampache/cmd/ampache_tool`
+```sh
+$ go get github.com/logank/ampache/cmd/ampache_tool
+$ ampache_tool https://example.com songs --limit=5
+```
 
 ### Library
 
@@ -19,6 +20,6 @@ import (
 func main() {
 	c, _ := ampache.New("https://example.com")
 	c.WithAuthPassword("user", "pass")
-	p, _ := c.InvokePing()
+	p, _ := c.Ping()
 }
 ```

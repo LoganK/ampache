@@ -2,8 +2,21 @@ package ampache
 
 import (
 	"encoding/xml"
+	"fmt"
 	"net/url"
 	"time"
+)
+
+const (
+	MediaSong           string = "song"
+	MediaAlbum                 = "album"
+	MediaArtist                = "artist"
+	MediaPlaylist              = "playlist"
+	MediaPodcast               = "podcast"
+	MediaPodcastEpisode        = "podcast_episode"
+	MediaVideo                 = "video"
+	MediaTvShow                = "tvshow"
+	MediaTvShowSeason          = "tvshow_season"
 )
 
 type xmlTime struct {
@@ -49,6 +62,27 @@ func (c *xmlURL) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 	c.URL = *u
 	return nil
+}
+
+type Success struct {
+	Code    int    `xml:"code,attr"`
+	Message string `xml:",chardata"`
+}
+
+type Error struct {
+	Action  string `xml:"errorAction"`
+	Code    int    `xml:"errorCode,attr"`
+	Type    string `xml:"errorType"`
+	Message string `xml:"errorMessage"`
+}
+
+func (e Error) Error() string {
+	return fmt.Sprintf("%s [%d]: '%s' for '%s'", e.Action, e.Code, e.Message, e.Type)
+}
+
+type Response struct {
+	Success *Success `xml:"success"`
+	Error   *Error   `xml:"error"`
 }
 
 type Artist struct {

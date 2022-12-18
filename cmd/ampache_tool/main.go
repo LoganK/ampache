@@ -49,16 +49,25 @@ func main() {
 
 	var v interface{}
 	err = nil
-	if action == "ping" {
+	switch action {
+	case "ping":
 		v, err = c.Ping()
-	} else if action == "songs" {
+	case "songs":
 		songs, serr := c.Songs(input)
 		for _, s := range songs.Songs {
 			fmt.Printf("%+v\n", s)
 		}
 		v = songs
 		err = serr
-	} else {
+	case "rate":
+		rateType := ampache.MediaSong
+		if t, ok := input["type"]; ok {
+			rateType = t
+		}
+		id, _ := strconv.Atoi(input["id"])
+		rating, _ := strconv.Atoi(input["rate"])
+		v, err = c.Rate(rateType, id, rating)
+	default:
 		resp, err := c.Invoke(action, input)
 		if err == nil {
 			defer resp.Close()

@@ -28,7 +28,7 @@ type Handshake struct {
 	Labels          int     `xml:"labels"`
 }
 
-func (c *Client) InvokeHandshake() (*Handshake, error) {
+func (c *Client) Handshake() (*Handshake, error) {
 	resp, err := c.Invoke("handshake", nil)
 	if err != nil {
 		return nil, fmt.Errorf("handshake failure: %w", err)

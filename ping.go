@@ -12,7 +12,7 @@ type Ping struct {
 	Compatible int    `xml:"compatible"`
 }
 
-func (c *Client) InvokePing() (*Ping, error) {
+func (c *Client) Ping() (*Ping, error) {
 	resp, err := c.Invoke("ping", nil)
 	if err != nil {
 		return nil, fmt.Errorf("ping failure: %w", err)

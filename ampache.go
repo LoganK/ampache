@@ -7,9 +7,13 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"strings"
 )
 
 type Client struct {
+	Verbose      bool
+	lastResponse *strings.Builder
+
 	host   *url.URL
 	key    string
 	client http.Client
@@ -60,6 +64,11 @@ func (c *Client) InvokeRaw(input map[string]string) (io.ReadCloser, error) {
 	return c.invokeInternal(params)
 }
 
+// LastResponse gets the last response body. Only works if Verbose is true.
+func (c *Client) LastResponse() string {
+	return c.lastResponse.String()
+}
+
 func (c *Client) invokeInternal(params url.Values) (io.ReadCloser, error) {
 	// Deep copy. This can't fail.
 	req, err := url.Parse(c.host.String())
@@ -73,8 +82,17 @@ func (c *Client) invokeInternal(params url.Values) (io.ReadCloser, error) {
 		return nil, fmt.Errorf("failed during API call: %w", err)
 	}
 
+	if c.Verbose {
+		log.Printf("%s [%d]", req.String(), resp.StatusCode)
+	}
+
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("unexpected response during API call: %w", err)
+	}
+
+	if c.Verbose {
+		c.lastResponse = &strings.Builder{}
+		io.TeeReader(resp.Body, c.lastResponse)
 	}
 
 	return resp.Body, nil

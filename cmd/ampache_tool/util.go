@@ -14,8 +14,8 @@ func parseArgs(args []string) (host, action string, input map[string]string, err
 		// Capture value part of "--flag value"
 		if needValue {
 			needValue = false
-			name = ""
 			input[name] = s
+			name = ""
 			continue
 		} else if s[0] == '-' {
 			numMinuses := 1

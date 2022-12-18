@@ -11,7 +11,7 @@ import (
 )
 
 type Client struct {
-	Verbose      bool
+	Verbose      int
 	lastResponse *strings.Builder
 
 	host   *url.URL
@@ -64,8 +64,11 @@ func (c *Client) InvokeRaw(input map[string]string) (io.ReadCloser, error) {
 	return c.invokeInternal(params)
 }
 
-// LastResponse gets the last response body. Only works if Verbose is true.
+// LastResponse gets the last response body. Only works if Verbose is >0.
 func (c *Client) LastResponse() string {
+	if c.lastResponse == nil {
+		return ""
+	}
 	return c.lastResponse.String()
 }
 
@@ -82,7 +85,7 @@ func (c *Client) invokeInternal(params url.Values) (io.ReadCloser, error) {
 		return nil, fmt.Errorf("failed during API call: %w", err)
 	}
 
-	if c.Verbose {
+	if c.Verbose > 0 {
 		log.Printf("%s [%d]", req.String(), resp.StatusCode)
 	}
 
@@ -90,10 +93,16 @@ func (c *Client) invokeInternal(params url.Values) (io.ReadCloser, error) {
 		return nil, fmt.Errorf("unexpected response during API call: %w", err)
 	}
 
-	if c.Verbose {
+	out := resp.Body
+	if c.Verbose > 0 {
 		c.lastResponse = &strings.Builder{}
-		io.TeeReader(resp.Body, c.lastResponse)
+		io.Copy(c.lastResponse, resp.Body)
+		resp.Body.Close()
+		if c.Verbose > 1 {
+			log.Printf("---\n%s\n---\n", c.lastResponse.String())
+		}
+		out = io.NopCloser(strings.NewReader(c.lastResponse.String()))
 	}
 
-	return resp.Body, nil
+	return out, nil
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/logank/ampache"
@@ -36,7 +37,11 @@ func main() {
 		os.Exit(-3)
 	}
 
-	c.Verbose = true
+	if v, found := os.LookupEnv("AMPACHE_VERBOSE"); found {
+		if vi, err := strconv.Atoi(v); err == nil {
+			c.Verbose = vi
+		}
+	}
 
 	if user != "" {
 		c.WithAuthPassword(user, pass)
@@ -46,6 +51,13 @@ func main() {
 	err = nil
 	if action == "ping" {
 		v, err = c.Ping()
+	} else if action == "songs" {
+		songs, serr := c.Songs(input)
+		for _, s := range songs.Songs {
+			fmt.Printf("%+v\n", s)
+		}
+		v = songs
+		err = serr
 	} else {
 		resp, err := c.Invoke(action, input)
 		if err == nil {

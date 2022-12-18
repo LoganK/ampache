@@ -32,9 +32,9 @@ func TestPingNoAuth(t *testing.T) {
 		t.Fatalf("Unexpected error New: %s", err)
 	}
 
-	v, err := c.InvokePing()
+	v, err := c.Ping()
 	if err != nil {
-		t.Fatalf("Unexpected error InvokePing: %s", err)
+		t.Fatalf("Unexpected error Ping: %s", err)
 	}
 
 	want := "5.5.5-release"
@@ -128,9 +128,9 @@ func TestPing(t *testing.T) {
 	}
 	c.WithAuthPassword(user, password)
 
-	v, err := c.InvokePing()
+	v, err := c.Ping()
 	if err != nil {
-		t.Fatalf("Unexpected error InvokePing: %s", err)
+		t.Fatalf("Unexpected error Ping: %s", err)
 	}
 
 	want := time.Date(2022, 12, 18, 1, 12, 37, 0, time.UTC)

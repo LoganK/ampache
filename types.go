@@ -106,3 +106,7 @@ type Song struct {
 	R128AlbumGain   int         `xml:"r128_album_gain"`
 	R128TrackGain   int         `xml:"r128_track_gain"`
 }
+
+type Songs struct {
+	Songs []Song `xml:"song"`
+}

@@ -142,5 +142,6 @@ type Song struct {
 }
 
 type Songs struct {
-	Songs []Song `xml:"song"`
+	TotalCount int    `xml:"total_count"`
+	Songs      []Song `xml:"song"`
 }
